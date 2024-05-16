@@ -1,54 +1,59 @@
-import { cloneDeep } from "lodash";
-import { ServerApi, CellData, Subscription } from "./api";
-import { v4 as uuid } from "uuid";
+import { USERS, PROJECTS } from "./data";
+import { ServerApi, ProjectData, UserData, Page, DataSource, GetPageArgs } from "./api";
+import { HexPagedDataSource } from "./pagination";
 
 class DefaultServer implements ServerApi {
-  private cellData: CellData[] = [
-    {
-      id: uuid(),
-      text: "hello world",
-    },
-  ];
-
-  private subscriptions: Subscription[] = [];
-
-  private static FAILURE_PERCENT = 0.2;
+  private static FAILURE_PERCENT = 0.0;
   private static SERVER_DELAY = 200;
 
-  getCells(): Promise<CellData[]> {
-    return new Promise((resolve, reject) => {
+  private readonly users: HexPagedDataSource<UserData>;
+  private readonly projects: HexPagedDataSource<ProjectData>;
+
+  constructor() {
+    this.users = new HexPagedDataSource(USERS);
+    this.projects = new HexPagedDataSource(PROJECTS);
+  }
+
+  getUsers({ pageSize, start, predicate }: GetPageArgs<UserData>) {
+    return new Promise<Page<UserData>>((resolve, reject) => {
       setTimeout(() => {
-        if (Math.random() > DefaultServer.FAILURE_PERCENT) {
-          resolve(cloneDeep(this.cellData));
-        } else {
+        if (Math.random() < DefaultServer.FAILURE_PERCENT) {
+          return reject("Server error");
+        }
+        try {
+          let page;
+          if (predicate != null) {
+            page = this.users.getNextPageWithPredicate(predicate, pageSize, start);
+          } else {
+            page = this.users.getNextPage(pageSize, start);
+          }
+          resolve(page);
+        } catch (_) {
           reject("Server error");
         }
       }, DefaultServer.SERVER_DELAY);
     });
   }
 
-  updateCells(newCells: CellData[]): Promise<void> {
-    return new Promise((resolve, reject) => {
+  getProjects({ pageSize, start, predicate }: GetPageArgs<ProjectData>) {
+    return new Promise<Page<ProjectData>>((resolve, reject) => {
       setTimeout(() => {
-        if (Math.random() > DefaultServer.FAILURE_PERCENT) {
-          this.cellData = cloneDeep(newCells);
-          this.subscriptions.forEach((subscription) =>
-            subscription(this.cellData)
-          );
-          resolve();
-        } else {
+        if (Math.random() < DefaultServer.FAILURE_PERCENT) {
+          return reject("Server error");
+        }
+        try {
+          let page;
+          if (predicate != null) {
+            page = this.projects.getNextPageWithPredicate(predicate, pageSize, start);
+          } else {
+            page = this.projects.getNextPage(pageSize, start);
+          }
+          resolve(page);
+        } catch (_) {
           reject("Server error");
         }
       }, DefaultServer.SERVER_DELAY);
     });
-  }
-
-  subscribe(subscription: Subscription): void {
-    this.subscriptions.push(subscription);
-  }
-
-  unsubscribe(subscription: Subscription): void {
-    this.subscriptions = this.subscriptions.filter((s) => s !== subscription);
   }
 }
 

@@ -1,4 +1,4 @@
-# Typescript Web Development Interview
+# Typescript Web Interview
 
 ## Overview
 
