@@ -36,7 +36,7 @@ export default function Projects({ selectedUser, nameById }: ProjectsProps) {
       {projects?.length === 0 && (<div>No projects found.</div>)}
       {projects?.map(project => (
         <div className="project" key={`project-${project.id}`}>
-          <div>{project.title}</div><div>{nameById[project.creatorId]}</div>
+          <div>({project.id}) {project.title}</div><div>{nameById[project.creatorId]}</div>
         </div>
       ))}
       <button disabled={!hasMoreResults} onClick={loadMore}>{projects?.length ? `(${projects.length}) ` : ''}Load more</button>
