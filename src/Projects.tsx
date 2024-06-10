@@ -14,11 +14,17 @@ export default function Projects({ selectedUser, nameById }: ProjectsProps) {
   const [projects, setProjects] = React.useState<ProjectData[] | null>(() => null);
   const [hasMoreResults, setHasMoreResults] = React.useState<boolean>(false);
 
-  const fetchProjects = React.useCallback((start?: ProjectData) => {
+  const fetchProjects = React.useCallback((start?: ProjectData, overwrite = false) => {
     const predicate = selectedUser != null ? (({ creatorId }: ProjectData) => creatorId === selectedUser) : undefined;
     SERVER.getProjects({ pageSize: 5, start, predicate }).then((page) => {
-      setProjects(projects => [...(projects ?? []), ...page.results]);
+      if (overwrite) {
+        setProjects(_ => ([...(page.results ?? [])]));
+      } else {
+        setProjects(projects => [...(projects ?? []), ...page.results]);
+      }
       setHasMoreResults(page.hasMoreResults);
+    }).catch(() => {
+      alert("Something went wrong...");
     });
   }, [selectedUser]);
 
@@ -28,7 +34,7 @@ export default function Projects({ selectedUser, nameById }: ProjectsProps) {
   }, [projects, fetchProjects])
 
   React.useEffect(() => {
-    fetchProjects();
+    fetchProjects(undefined, true);
   }, [selectedUser, fetchProjects]);
 
   return (

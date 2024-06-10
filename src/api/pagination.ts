@@ -1,4 +1,5 @@
 import { DataSource, Entity, Page, PagedDataSource } from "./api";
+import { BusyLoopDetector } from "./busyLoopDetector";
 
 export class HexPagedDataSource<T extends Entity> implements PagedDataSource<T> {
   private readonly source: HexDataSource<T>;
@@ -22,9 +23,14 @@ export class HexPagedDataSource<T extends Entity> implements PagedDataSource<T> 
 }
 
 class HexDataSource<T extends Entity> implements DataSource<T> {
-  constructor(private readonly store: T[]) { }
+  private readonly detector: BusyLoopDetector;
+
+  constructor(private readonly store: T[]) {
+    this.detector = new BusyLoopDetector();
+  }
 
   getItems(pageSize: number, start?: T): T[] {
+    this.detector.check();
     if (start == null) {
       return this.store.slice(0, pageSize);
     }
