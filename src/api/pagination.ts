@@ -12,13 +12,13 @@ export class HexPagedDataSource<T extends Entity> implements PagedDataSource<T> 
    * INTERVIEW PART ONE: Implement the `getNextPage` method. 
    * 
    * @param pageSize the number of items (projects) to return. If there are not pageSize items left, return up to pageSize items.
-   * @param cursor the (optional) offset cursor from the previous page.
+   * @param cursorItem the (optional) offset cursorItem from the previous page.
    * 
    * @returns a Page object with the results and a boolean indicating if there are more results. TIP: check out the Page interface for more information.
    */
-  getNextPage(pageSize: number, cursor?: T): Page<T> {
+  getNextPage(pageSize: number, cursorItem?: T): Page<T> {
     return {
-      results: this.source.getItems(pageSize, cursor),
+      results: this.source.getItems(pageSize, cursorItem),
       hasMoreResults: false,
     };
   }
@@ -28,12 +28,12 @@ export class HexPagedDataSource<T extends Entity> implements PagedDataSource<T> 
    * 
    * @param filterCallback the filter callback function that will be used to filter the results.
    * @param pageSize the number of items (projects) to return. If there are not pageSize items left, return up to pageSize items.
-   * @param cursor the (optional) offset from the previous page. 
+   * @param cursorItem the (optional) offset from the previous page. 
    * 
    * @returns a Page object with the items filtered by the filter callback and a boolean indicating if there are more results. TIP: check out the Page interface for more information.
    */
-  getNextPageWithPredicate(filterCallback: (item: T) => boolean, pageSize: number, cursor?: T): Page<T> {
-    return this.getNextPage(pageSize, cursor);
+  getNextPageWithPredicate(filterCallback: (item: T) => boolean, pageSize: number, cursorItem?: T): Page<T> {
+    return this.getNextPage(pageSize, cursorItem);
   }
 }
 
@@ -48,18 +48,18 @@ class MockedDatabase<T extends Entity> implements DataSource<T> {
     this.detector = new BusyLoopDetector();
   }
 
-  getItems(pageSize: number, cursor?: T): T[] {
+  getItems(pageSize: number, cursorItem?: T): T[] {
     this.detector.check();
-    if (cursor == null) {
+    if (cursorItem == null) {
       return this.store.slice(0, pageSize);
     }
 
-    const index = this.store.findIndex(item => item.id === cursor.id);
+    const index = this.store.findIndex(item => item.id === cursorItem.id);
     if (index === -1) {
-      throw new Error(`No element with id ${cursor.id}`);
+      throw new Error(`No element with id ${cursorItem.id}`);
     }
 
-    // Skip over the matching cursor
+    // Skip over the matching cursorItem
     const startAtIndex = index + 1;
     return this.store.slice(startAtIndex, startAtIndex + pageSize);
   }
