@@ -1,17 +1,17 @@
 import { USERS, PROJECTS } from "./data";
-import { ServerApi, ProjectData, UserData, Page, DataSource, GetPageArgs } from "./api";
-import { HexPagedDataSource } from "./pagination";
+import { ServerApi, ProjectData, UserData, Page, GetPageArgs } from "./types";
+import { Paginator } from "./pagination";
 
 class DefaultServer implements ServerApi {
   private static FAILURE_PERCENT = 0.0;
   private static SERVER_DELAY = 200;
 
-  private readonly users: HexPagedDataSource<UserData>;
-  private readonly projects: HexPagedDataSource<ProjectData>;
+  private readonly users: Paginator<UserData>;
+  private readonly projects: Paginator<ProjectData>;
 
   constructor() {
-    this.users = new HexPagedDataSource(USERS);
-    this.projects = new HexPagedDataSource(PROJECTS);
+    this.users = new Paginator(USERS);
+    this.projects = new Paginator(PROJECTS);
   }
 
   getUsers({ pageSize, start, predicate }: GetPageArgs<UserData>) {
