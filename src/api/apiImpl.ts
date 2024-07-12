@@ -23,7 +23,7 @@ class DefaultServer implements ServerApi {
         try {
           let page;
           if (predicate != null) {
-            page = this.users.getNextPageWithPredicate(predicate, pageSize, start);
+            page = this.users.getNextPageWithFilter(predicate, pageSize, start);
           } else {
             page = this.users.getNextPage(pageSize, start);
           }
@@ -44,7 +44,7 @@ class DefaultServer implements ServerApi {
         try {
           let page;
           if (predicate != null) {
-            page = this.projects.getNextPageWithPredicate(predicate, pageSize, start);
+            page = this.projects.getNextPageWithFilter(predicate, pageSize, start);
           } else {
             page = this.projects.getNextPage(pageSize, start);
           }

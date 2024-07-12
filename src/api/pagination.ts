@@ -28,7 +28,7 @@ export class Paginator<T extends Entity> {
    * `filterCallback`. If a `cursor` value is specified the elements starting
    * _after_ `cursor` are returned.  Otherwise the 1st page is returned.
    */
-  getNextPageWithPredicate(filterCallback: (item: T) => boolean, pageSize: number, cursor?: T): Page<T> {
+  getNextPageWithFilter(filterCallback: (item: T) => boolean, pageSize: number, cursor?: T): Page<T> {
     // PART TWO 
     // Implement routine to accurately return filtered pages.
 
