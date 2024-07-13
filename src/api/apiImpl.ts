@@ -1,6 +1,18 @@
 import { USERS, PROJECTS } from "./data";
-import { ServerApi, ProjectData, UserData, Page, GetPageArgs } from "./types";
-import { Paginator } from "./pagination";
+import { ProjectData, UserData } from "./types";
+import { Page, Paginator } from "./pagination";
+
+// Colocating these in `apiImpl.ts` as they're not important for consumers of
+// `types.ts`.
+interface GetPageArgs<T> {
+  pageSize: number;
+  startAfter?: T;
+  filterCallback?: (item: T) => boolean;
+}
+interface ServerApi {
+  getUsers(args: GetPageArgs<UserData>): Promise<Page<UserData>>;
+  getProjects(args: GetPageArgs<ProjectData>): Promise<Page<ProjectData>>;
+}
 
 class DefaultServer implements ServerApi {
   private static FAILURE_PERCENT = 0.0;
@@ -14,7 +26,7 @@ class DefaultServer implements ServerApi {
     this.projects = new Paginator(PROJECTS);
   }
 
-  getUsers({ pageSize, start, predicate }: GetPageArgs<UserData>) {
+  getUsers({ pageSize, startAfter: start, filterCallback }: GetPageArgs<UserData>) {
     return new Promise<Page<UserData>>((resolve, reject) => {
       setTimeout(() => {
         if (Math.random() < DefaultServer.FAILURE_PERCENT) {
@@ -22,8 +34,8 @@ class DefaultServer implements ServerApi {
         }
         try {
           let page;
-          if (predicate != null) {
-            page = this.users.getNextPageWithFilter(predicate, pageSize, start);
+          if (filterCallback != null) {
+            page = this.users.getNextPageWithFilter(filterCallback, pageSize, start);
           } else {
             page = this.users.getNextPage(pageSize, start);
           }
@@ -35,7 +47,7 @@ class DefaultServer implements ServerApi {
     });
   }
 
-  getProjects({ pageSize, start, predicate }: GetPageArgs<ProjectData>) {
+  getProjects({ pageSize, startAfter: start, filterCallback }: GetPageArgs<ProjectData>) {
     return new Promise<Page<ProjectData>>((resolve, reject) => {
       setTimeout(() => {
         if (Math.random() < DefaultServer.FAILURE_PERCENT) {
@@ -43,8 +55,8 @@ class DefaultServer implements ServerApi {
         }
         try {
           let page;
-          if (predicate != null) {
-            page = this.projects.getNextPageWithFilter(predicate, pageSize, start);
+          if (filterCallback != null) {
+            page = this.projects.getNextPageWithFilter(filterCallback, pageSize, start);
           } else {
             page = this.projects.getNextPage(pageSize, start);
           }

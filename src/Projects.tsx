@@ -14,9 +14,9 @@ export default function Projects({ selectedUser, nameById }: ProjectsProps) {
   const [projects, setProjects] = React.useState<ProjectData[] | null>(() => null);
   const [hasMoreResults, setHasMoreResults] = React.useState<boolean>(false);
 
-  const fetchProjects = React.useCallback((start?: ProjectData, overwrite = false) => {
-    const predicate = selectedUser != null ? (({ creatorId }: ProjectData) => creatorId === selectedUser) : undefined;
-    SERVER.getProjects({ pageSize: 5, start, predicate }).then((page) => {
+  const fetchProjects = React.useCallback((startAfter?: ProjectData, overwrite = false) => {
+    const filterCallback = selectedUser != null ? (({ creatorId }: ProjectData) => creatorId === selectedUser) : undefined;
+    SERVER.getProjects({ pageSize: 5, startAfter, filterCallback }).then((page) => {
       if (overwrite) {
         setProjects(_ => ([...(page.results ?? [])]));
       } else {
@@ -42,10 +42,10 @@ export default function Projects({ selectedUser, nameById }: ProjectsProps) {
       {projects?.length === 0 && (<div>No projects found.</div>)}
       {projects?.map(project => (
         <div className="project" key={`project-${project.id}`}>
-          <div>({project.id}) {project.title}</div><div>{nameById[project.creatorId]}</div>
+          <div>(ID {project.id}) {project.title}</div><div>{nameById[project.creatorId]}</div>
         </div>
       ))}
-      <button disabled={!hasMoreResults} onClick={loadMore}>{projects?.length ? `(${projects.length}) ` : ''}Load more</button>
+      <button disabled={!hasMoreResults} onClick={loadMore}>{projects?.length ? `${projects.length} Project(s) Loaded - ` : ''}Load more</button>
     </div>
   );
 }
