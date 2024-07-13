@@ -26,7 +26,7 @@ class DefaultServer implements ServerApi {
     this.projects = new Paginator(PROJECTS);
   }
 
-  getUsers({ pageSize, startAfter: start, filterCallback }: GetPageArgs<UserData>) {
+  getUsers({ pageSize, startAfter, filterCallback }: GetPageArgs<UserData>) {
     return new Promise<Page<UserData>>((resolve, reject) => {
       setTimeout(() => {
         if (Math.random() < DefaultServer.FAILURE_PERCENT) {
@@ -35,9 +35,9 @@ class DefaultServer implements ServerApi {
         try {
           let page;
           if (filterCallback != null) {
-            page = this.users.getNextPageWithFilter(filterCallback, pageSize, start);
+            page = this.users.getNextPageWithFilter(filterCallback, pageSize, startAfter);
           } else {
-            page = this.users.getNextPage(pageSize, start);
+            page = this.users.getNextPage(pageSize, startAfter);
           }
           resolve(page);
         } catch (_) {
@@ -47,7 +47,7 @@ class DefaultServer implements ServerApi {
     });
   }
 
-  getProjects({ pageSize, startAfter: start, filterCallback }: GetPageArgs<ProjectData>) {
+  getProjects({ pageSize, startAfter, filterCallback }: GetPageArgs<ProjectData>) {
     return new Promise<Page<ProjectData>>((resolve, reject) => {
       setTimeout(() => {
         if (Math.random() < DefaultServer.FAILURE_PERCENT) {
@@ -56,9 +56,9 @@ class DefaultServer implements ServerApi {
         try {
           let page;
           if (filterCallback != null) {
-            page = this.projects.getNextPageWithFilter(filterCallback, pageSize, start);
+            page = this.projects.getNextPageWithFilter(filterCallback, pageSize, startAfter);
           } else {
-            page = this.projects.getNextPage(pageSize, start);
+            page = this.projects.getNextPage(pageSize, startAfter);
           }
           resolve(page);
         } catch (_) {
