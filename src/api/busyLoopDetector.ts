@@ -4,7 +4,7 @@ export class BusyLoopDetector {
   private timeWindow: number;
   private startTime: number;
 
-  constructor(threshold: number = 100, timeWindow: number = 1000) {
+  constructor(threshold: number = 1000, timeWindow: number = 1000) {
     this.counter = 0;
     this.threshold = threshold;
     this.timeWindow = timeWindow;
