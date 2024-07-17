@@ -16,7 +16,7 @@ interface ServerApi {
 
 class DefaultServer implements ServerApi {
   private static FAILURE_PERCENT = 0.0;
-  private static SERVER_DELAY = 200;
+  private static SERVER_DELAY = 100;
 
   private readonly users: Paginator<UserData>;
   private readonly projects: Paginator<ProjectData>;
