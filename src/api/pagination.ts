@@ -38,12 +38,30 @@ export class Paginator<T extends Entity> {
    * `filterCallback`. If a `startAfter` value is specified the elements
    * starting _after_ `startAfter` are returned.  Otherwise the 1st page is
    * returned.
+   *
+   * Returns only array of items rather than Page data structure.
+   */
+  private getItemsWithFilter(filterCallback: (item: T) => boolean, pageSize: number, startAfter?: T): T[] {
+    // PART TWO
+    // Implement filtering of relevant items from store.
+
+    return this.source.getItems(pageSize, startAfter); // TODO
+  }
+
+  /**
+   * Retrieves up to the next `pageSize` elements that satisfy the provided
+   * `filterCallback`. If a `startAfter` value is specified the elements
+   * starting _after_ `startAfter` are returned.  Otherwise the 1st page is
+   * returned.
    */
   getNextPageWithFilter(filterCallback: (item: T) => boolean, pageSize: number, startAfter?: T): Page<T> {
-    // PART TWO 
-    // Implement routine to return filtered page.
+    // PART THREE
+    // Implement hasMoreResults for filtered pages.
 
-    return this.getNextPage(pageSize, startAfter);
+    return {
+      results: this.getItemsWithFilter(filterCallback, pageSize, startAfter),
+      hasMoreResults: false, // TODO
+    };
   }
 }
 
